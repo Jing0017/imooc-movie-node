@@ -1,2 +1,2 @@
 # imooc-movie-node
-scott node 建站第一期代码整理
+scott node 建站代码整理
