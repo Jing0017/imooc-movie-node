@@ -1,5 +1,6 @@
 var express = require('express')
 var bodyParser = require('body-parser')
+var multiparty = require('connect-multiparty')
 var cookieSession = require('cookie-session')
 var session = require('express-session')
 var mongoStore = require('connect-mongo')(session)
@@ -9,12 +10,32 @@ var logger = require('morgan')
 
 var port = process.env.PORT || 3000
 var app = express()
+var fs = require('fs')
 var dbUrl = 'mongodb://localhost/imooc'
 
 mongoose.connect(dbUrl)
 
+// models loading
+var models_path = __dirname + '/app/models'
+var walk = function (path) {
+  fs.readdirSync(path)
+    .forEach(function (file) {
+      var newPath = path + '/' + file
+      var stat = fs.statSync(newPath)
+
+      if(stat.isFile()){
+        if(/(.*)\.(js|coffee)/.test(file)){
+          require(newPath)
+        }
+      }else if(stat.isDirectory){
+        walk(newPath)
+      }
+    })
+}
+walk(models_path)
+
 //allow custom header and CORS
-app.all('*', function(req, res, next) {
+app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
@@ -31,6 +52,7 @@ app.set('view engine', 'jade')
 app.use(bodyParser.urlencoded({
   extended: true
 }))
+app.use(multiparty())
 app.use(session({
   secret: 'imooc',
   store: new mongoStore({

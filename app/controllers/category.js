@@ -43,11 +43,11 @@ exports.del = function (req, res) {
     var id = req.query.id
 
     if (id) {
-        Movie.remove({
+        Category.remove({
             _id: id
         }, function (err, movie) {
             if (err) {
-                console.list(err)
+                console.log(err)
             } else {
                 res.json({
                     success: 1
