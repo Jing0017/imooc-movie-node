@@ -23,11 +23,11 @@ var walk = function (path) {
       var newPath = path + '/' + file
       var stat = fs.statSync(newPath)
 
-      if(stat.isFile()){
-        if(/(.*)\.(js|coffee)/.test(file)){
+      if (stat.isFile()) {
+        if (/(.*)\.(js|coffee)/.test(file)) {
           require(newPath)
         }
-      }else if(stat.isDirectory){
+      } else if (stat.isDirectory) {
         walk(newPath)
       }
     })
@@ -61,7 +61,8 @@ app.use(session({
   })
 }))
 
-if ('development' === app.get('env')) {
+var env = process.env.NODE_ENV || 'development'
+if ('development' === env) {
   app.set('showStackError', true)
   app.use(logger(':method :url :status'))
   app.locals.pretty = true
